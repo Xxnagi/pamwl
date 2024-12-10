@@ -9,6 +9,7 @@ const store = createStore({
       suppliers: [],
       categories: [],
       expenses: [],
+      sales: [],
       initialized: false,
     };
   },
@@ -25,7 +26,9 @@ const store = createStore({
     setExpenses(state, expenses) {
       state.expenses = expenses;
     },
-
+    setSales(state, sales) {
+      state.sales = sales;
+    },
     setInitialized(state, value) {
       state.initialized = value;
     },
@@ -49,7 +52,7 @@ const store = createStore({
     },
     async fetchCategories({ commit }) {
       try {
-        const categories = await fetchData("/categories");
+        const categories = await fetchData("/category/all");
         commit("setCategories", categories);
       } catch (error) {
         console.error("Error fetching categories:", error);
@@ -63,12 +66,21 @@ const store = createStore({
         console.error("Error fetching expenses:", error);
       }
     },
+    async fetchSales({ commit }) {
+      try {
+        const sales = await fetchData("/sales/all");
+        commit("setSales", sales);
+      } catch (error) {
+        console.error("Error fetching sales:", error);
+      }
+    },
     async initializeAppData({ dispatch }) {
       await Promise.all([
         dispatch("fetchProducts"),
         dispatch("fetchSuppliers"),
         dispatch("fetchCategories"),
         dispatch("fetchExpenses"),
+        dispatch("fetchSales"),
       ]);
     },
   },
@@ -84,6 +96,9 @@ const store = createStore({
     },
     getExpenses(state) {
       return state.expenses;
+    },
+    getSales(state) {
+      return state.sales;
     },
   },
 });

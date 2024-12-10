@@ -11,9 +11,10 @@
 <script>
 export default {
   props: {
-    expenses: {
+    data: {
       type: Number,
       required: true,
+      default: 0,
     },
   },
   computed: {
@@ -21,7 +22,7 @@ export default {
       return new Intl.NumberFormat("id-ID", {
         style: "currency",
         currency: "IDR",
-      }).format(this.expenses.total_pembelian);
+      }).format(this.data.total_pembelian);
     },
   },
 };

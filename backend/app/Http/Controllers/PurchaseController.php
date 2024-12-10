@@ -69,7 +69,7 @@ class PurchaseController extends Controller
         return response()->json($purchases, 200);
     }
 
-    public function getTotalPurchase()
+    public function getTotalPurchases()
     {
         $totalPurchase = Purchase::sum('total_pembelian');
         return response()->json(['total_pembelian' => $totalPurchase], 200);

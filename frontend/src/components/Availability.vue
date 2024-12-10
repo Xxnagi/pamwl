@@ -1,9 +1,9 @@
 <template>
   <div class="border-2 px-5 py-3 rounded-lg">
-    <p class="font-bold text-2xl mb-7">Bahan Baku</p>
+    <p class="font-bold text-2xl mb-7">{{ items.length }} Bahan Baku</p>
 
     <!-- Statistik Bahan Baku -->
-    <div class="w-72 h-3 flex mt-6">
+    <div class="w-full h-3 flex mt-6">
       <!-- Bar Tersedia -->
       <div
         class="bg-green-500 rounded-xl"

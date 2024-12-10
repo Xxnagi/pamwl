@@ -4,7 +4,7 @@
       <!-- Komponen Availability -->
       <Availability :items="products" />
 
-      <StatCard :expenses="expenses" />
+      <StatCard :data="expenses" />
     </div>
     <div class="flex items-center justify-between mb-4">
       <!-- Search Bar -->
@@ -34,10 +34,10 @@
       v-if="showModal"
       class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
     >
-      <div class="bg-white p-6 rounded-lg w-full max-w-md">
+      <!-- <div class="bg-white p-6 rounded-lg w-full max-w-md">
         <h2 class="text-xl font-semibold mb-4">Tambah Pembelian</h2>
         <form @submit.prevent="submitProduct" class="space-y-4">
-          <!-- Form Input Produk -->
+      
           <div>
             <label class="block text-sm font-medium text-gray-700"
               >Nama Produk</label
@@ -120,7 +120,7 @@
           </button>
         </form>
 
-        <!-- Tabel Produk yang Dimasukkan -->
+
         <div class="mt-6">
           <h3 class="text-lg font-semibold">Produk yang Dimasukkan</h3>
           <table class="min-w-full mt-2 table-auto">
@@ -148,7 +148,8 @@
             </tbody>
           </table>
         </div>
-      </div>
+      </div> -->
+      <Test />
     </div>
   </div>
 </template>
@@ -158,6 +159,8 @@ import { ref, onMounted, computed } from "vue";
 import { addData } from "../services/api";
 import Availability from "../components/Availability.vue";
 import TableProducts from "../components/TableProducts.vue";
+import Test from "../views/Test.vue";
+
 import SearchBar from "../components/SearchBar.vue";
 import { useStore } from "vuex";
 import StatCard from "../components/StatCard.vue";
@@ -168,6 +171,7 @@ export default {
     StatCard,
     TableProducts,
     SearchBar,
+    Test,
   },
   setup() {
     const showModal = ref(false); // Untuk mengontrol tampilan modal
@@ -215,8 +219,6 @@ export default {
           .includes(searchQuery.value.toLowerCase())
       );
     });
-
-    console.log("Products:", products.value);
 
     onMounted(() => {
       store.dispatch("initializeAppData");

@@ -14,48 +14,63 @@ class SalesController extends Controller
     {
         try {
             $jenisTransaksi = $request->input('jenis_transaksi', 'Penjualan');
-            $product = Product::find($request->product_id);
 
-            // Cek apakah stok produk cukup
-            if ($product->stock < $request->quantity) {
-                return response()->json([
-                    'message' => 'Stok tidak cukup untuk transaksi ini.'
-                ], 400);
+            // Inisialisasi total penjualan
+            $totalTransaction = 0;
+
+            // Array untuk menyimpan ID transaksi produk
+            $transactionIds = [];
+
+            // Proses setiap produk yang dibeli
+            foreach ($request->products as $productData) {
+                $product = Product::find($productData['product_id']);
+
+                if (!$product) {
+                    return response()->json(['message' => 'Product with ID ' . $productData['product_id'] . ' not found'], 404);
+                }
+
+                // Cek apakah stok cukup
+                if ($product->stock < $productData['quantity']) {
+                    return response()->json([
+                        'message' => 'Stok tidak cukup untuk produk dengan ID ' . $productData['product_id']
+                    ], 400);
+                }
+
+                // Hitung total untuk produk tersebut
+                $total = $product->price * $productData['quantity'];
+                $totalTransaction += $total;
+
+                // Kurangi stok produk
+                $product->decrement('stock', $productData['quantity']);
+
+                // Buat transaksi untuk setiap produk
+                $transaction = Transaction::create([
+                    'quantity' => $productData['quantity'],
+                    'total' => $total,
+                    'transaction_date' => $request->transaction_date,
+                    'jenis_transaksi' => $jenisTransaksi,
+                    'product_id' => $productData['product_id'],
+                    'admin_id' => 1
+                ]);
+
+                // Simpan ID transaksi untuk nanti di tabel Sales
+                $transactionIds[] = $transaction->transaction_id;
             }
-            $product->decrement('stock', $request->quantity);
 
-            $transaction = Transaction::create([
-                'quantity' => $request->quantity,
-                'total' => $request->total,
-                'transaction_date' => $request->transaction_date,
-                'jenis_transaksi' => $jenisTransaksi,
-                'product_id' => $request->product_id,
-                'admin_id' => 1
-            ]);
-            $transactionId = $transaction->transaction_id;
+            // Buat sales yang mengacu pada transaksi yang telah dibuat
             $sales = Sales::create([
-                'transaction_id' => $transactionId,
                 'customer_id' => $request->sales['customer_id'],
-                'tanggal_penjualan' => $request->tanggal_penjualan,
-                'total_penjualan' => $request->total,
+                'tanggal_penjualan' => $request->transaction_date,
+                'total_penjualan' => $totalTransaction,
             ]);
 
-            $product = Product::find($request->product_id);
-
-            if (!$product) {
-                return response()->json(['message' => 'Product not found'], 404);
-            }
-
-            $product->update([
-                'stock' => $product->stock - $request->quantity
-            ]);
-
-            // Return the created sales or a success message
+            // Return hasil penjualan
             return response()->json(['success' => true, 'sales' => $sales], 201);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
+
     public function showSales()
     {
         $sales = Sales::all();

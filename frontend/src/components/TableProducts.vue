@@ -50,7 +50,7 @@ export default {
     },
     categories: {
       type: Array,
-      required: true, // Pastikan kategori juga diterima sebagai prop
+      required: false, // Pastikan kategori juga diterima sebagai prop
     },
   },
   methods: {
@@ -75,7 +75,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-/* Tambahkan style tambahan jika diperlukan */
-</style>

@@ -33,9 +33,9 @@ export default {
 </script>
 
 <template>
-  <div class="flex-[1] overflow-auto p-4">
-    <div class="flex">
-      <div class="border-2 px-5 py-3 rounded-lg">
+  <div class="flex-[1] overflow-auto py-4 px-12">
+    <div class="flex w-full h-40">
+      <div class="border-2 px-5 py-3 rounded-lg w-1/3">
         <p class="font-bold text-lg">Penghasilan Kotor</p>
         <h1 class="font-extrabold text-2xl mt-5">Rp. 153.788.300.000</h1>
         <div class="flex mt-3">
@@ -43,8 +43,8 @@ export default {
           <p><span class="text-green-400">+24%</span> dari bulan lalu</p>
         </div>
       </div>
-      <StatCard :expenses="expenses" class="ml-5" />
-      <Availability :items="products" class="ml-5" />
+      <StatCard :data="expenses" class="ml-5 w-1/3" />
+      <Availability :items="products" class="ml-5 w-2/3" />
     </div>
     <div class="flex py-5">
       <SalesChart />

@@ -38,7 +38,7 @@
         <input
           type="number"
           id="price"
-          v-model="productForm.price"
+          v-model.number="productForm.price"
           placeholder="Masukkan harga produk"
           class="mt-2 p-3 border rounded-xl focus:ring focus:ring-blue-300"
           required
@@ -114,27 +114,28 @@
 </template>
 
 <script>
+import { ref, onMounted, computed } from "vue";
 import store from "@/state/store";
-import { computed } from "vue";
 import { addData } from "@/services/api";
 
 export default {
-  data() {
-    return {
-      productForm: {
-        product_name: "",
-        product_description: "",
-        price: null,
-        supplier_name: "",
-        supplier_contact: "",
-        category_id: "",
-      },
-      categories: computed(() => store.state.categories),
-    };
-  },
-  methods: {
-    resetForm() {
-      this.productForm = {
+  setup() {
+    // Initialize form data
+    const productForm = ref({
+      product_name: "",
+      product_description: "",
+      price: null,
+      supplier_name: "",
+      supplier_contact: "",
+      category_id: "",
+    });
+
+    // Get categories from store
+    const categories = computed(() => store.state.categories);
+
+    // Reset form method
+    const resetForm = () => {
+      productForm.value = {
         product_name: "",
         product_description: "",
         price: null,
@@ -142,40 +143,48 @@ export default {
         supplier_contact: "",
         category_id: "",
       };
-    },
+    };
 
-    async handleSubmit() {
+    // Submit handler
+    const handleSubmit = async () => {
       try {
-        console.log(productForm.value);
-        // Siapkan payload data untuk API
+        // Prepare payload data for API to match controller's expected structure
         const payload = {
-          product: {
-            product_name: this.productForm.product_name,
-            product_description: this.productForm.product_description,
-            price: this.productForm.price,
-          },
-          supplier: {
-            supplier_name: this.productForm.supplier_name,
-            supplier_contact: this.productForm.supplier_contact,
-          },
-          category_id: this.productForm.category_id,
+          product_name: productForm.value.product_name,
+          product_description: productForm.value.product_description,
+          price: productForm.value.price,
+          stock: 0,
+          category_id: productForm.value.category_id,
+          supplier_name: productForm.value.supplier_name,
+          supplier_contact: productForm.value.supplier_contact,
         };
+        console.log(payload);
 
-        // Kirim request ke endpoint /products
+        // Send request to /products endpoint
         const response = await addData("/products", payload);
         console.log("Product added:", response);
 
-        // Perbarui data produk setelah penambahan
+        // Update product and supplier data
         await store.dispatch("fetchProducts");
         await store.dispatch("fetchSuppliers");
 
         // Reset form
-        this.resetForm();
+        resetForm();
+
+        // Optionally show success message
+        alert("Produk berhasil ditambahkan");
       } catch (error) {
         console.error("Error adding product:", error);
         alert("Gagal menambahkan produk. Silakan coba lagi.");
       }
-    },
+    };
+
+    return {
+      productForm,
+      categories,
+      resetForm,
+      handleSubmit,
+    };
   },
 };
 </script>

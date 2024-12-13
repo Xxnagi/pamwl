@@ -16,11 +16,11 @@ const routes = [
     name: "Sales",
     component: () => import("../views/Sales.vue"),
   },
-  {
-    path: "/test",
-    name: "Test",
-    component: () => import("../views/Test.vue"),
-  },
+  // {
+  //   path: "/test",
+  //   name: "Test",
+  //   component: () => import("../views/Test.vue"),
+  // },
 ];
 
 const router = createRouter({

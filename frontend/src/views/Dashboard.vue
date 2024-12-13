@@ -1,9 +1,43 @@
+<template>
+  <div class="flex-[1] overflow-auto">
+    <div class="flex gap-6 min-w-max p-8">
+      <StatCard :data="sales" :type="'sales'" class="flex-1" />
+      <StatCard :data="purchases" :type="'purchase'" class="flex-1" />
+      <Availability :items="products" class="flex-1" />
+    </div>
+
+    <!-- Add p-8 to the Tabs container to match the padding -->
+    <Tabs value="0">
+      <TabList>
+        <Tab value="0">Stock</Tab>
+        <Tab value="1">Sales</Tab>
+      </TabList>
+      <TabPanels class="m-0">
+        <TabPanel value="0">
+          <TransactionTable :transactions="transactions" :products="products" />
+        </TabPanel>
+
+        <TabPanel value="1">
+          <TableProducts :products="products" :categories="categories" />
+        </TabPanel>
+      </TabPanels>
+    </Tabs>
+  </div>
+</template>
+
 <script>
 import { onMounted, computed } from "vue";
+import { useStore } from "vuex";
+
+import Tabs from "primevue/tabs";
+import TabList from "primevue/tablist";
+import Tab from "primevue/tab";
+import TabPanels from "primevue/tabpanels";
+import TabPanel from "primevue/tabpanel";
+
 import Availability from "../components/Availability.vue";
 import TableProducts from "../components/TableProducts.vue";
-import { useStore } from "vuex";
-import TrendingUpGreen from "../components/icons/TrendingUpGreen.vue";
+import TransactionTable from "../components/TransactionTable.vue";
 import SalesChart from "../components/SalesChart.vue";
 import StatCard from "../components/StatCard.vue";
 
@@ -11,45 +45,49 @@ export default {
   components: {
     Availability,
     TableProducts,
+    TransactionTable,
     SalesChart,
     StatCard,
+    // PrimeVue Components
+    Tabs,
+    TabPanel,
+    Tab,
+    TabList,
+    TabPanels,
   },
   setup() {
     const store = useStore();
     const products = computed(() => store.state.products);
-    const expenses = computed(() => store.state.expenses);
+    const sales = computed(() => store.state.sales);
+    const purchases = computed(() => store.state.purchases);
     const categories = computed(() => store.state.categories);
+    const transactions = computed(() => store.state.transactions);
 
     onMounted(() => {
       store.dispatch("initializeAppData");
     });
+
     return {
       products,
-      expenses,
+      purchases,
+      sales,
       categories,
+      transactions,
     };
   },
 };
 </script>
+<style scoped>
+:deep(.p-tablist) {
+  color: #3b82f6;
+  padding-left: 32px;
+}
 
-<template>
-  <div class="flex-[1] overflow-auto py-4 px-12">
-    <div class="flex w-full h-40">
-      <div class="border-2 px-5 py-3 rounded-lg w-1/3">
-        <p class="font-bold text-lg">Penghasilan Kotor</p>
-        <h1 class="font-extrabold text-2xl mt-5">Rp. 153.788.300.000</h1>
-        <div class="flex mt-3">
-          <TrendingUpGreen />
-          <p><span class="text-green-400">+24%</span> dari bulan lalu</p>
-        </div>
-      </div>
-      <StatCard :data="expenses" class="ml-5 w-1/3" />
-      <Availability :items="products" class="ml-5 w-2/3" />
-    </div>
-    <div class="flex py-5">
-      <SalesChart />
-    </div>
+:deep(.p-tabs .p-tablist-active-bar) {
+  background-color: #3b82f6;
+}
 
-    <TableProducts :products="products" :categories="categories" class="" />
-  </div>
-</template>
+:deep(.p-tab-active) {
+  color: #3b82f6;
+}
+</style>

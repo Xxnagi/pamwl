@@ -1,6 +1,6 @@
 <template>
   <div class="border-2 px-5 py-3 rounded-lg">
-    <p class="font-bold text-2xl mb-7">{{ items.length }} Bahan Baku</p>
+    <p class="font-bold text-2xl mb-7">{{ items.length }} Product</p>
 
     <!-- Statistik Bahan Baku -->
     <div class="w-full h-3 flex mt-6">

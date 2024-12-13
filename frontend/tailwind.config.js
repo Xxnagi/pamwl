@@ -7,6 +7,14 @@ export default {
       fontFamily: {
         nunito: ["Nunito", "sans-serif"],
       },
+      colors: {
+        primary: {
+          DEFAULT: "#your-primary-color-hex",
+          // You can add variations like
+          light: "#lighter-shade",
+          dark: "#darker-shade",
+        },
+      },
     },
   },
   plugins: [],

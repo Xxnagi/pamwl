@@ -8,8 +8,9 @@ const store = createStore({
       products: [],
       suppliers: [],
       categories: [],
-      expenses: [],
       sales: [],
+      purchases: [],
+      transactions: [],
       initialized: false,
     };
   },
@@ -23,11 +24,14 @@ const store = createStore({
     setCategories(state, categories) {
       state.categories = categories;
     },
-    setExpenses(state, expenses) {
-      state.expenses = expenses;
-    },
     setSales(state, sales) {
       state.sales = sales;
+    },
+    setTransactions(state, transactions) {
+      state.transactions = transactions;
+    },
+    setPurchases(state, purchases) {
+      state.purchases = purchases;
     },
     setInitialized(state, value) {
       state.initialized = value;
@@ -58,14 +62,6 @@ const store = createStore({
         console.error("Error fetching categories:", error);
       }
     },
-    async fetchExpenses({ commit }) {
-      try {
-        const expenses = await fetchData("/purchases/total");
-        commit("setExpenses", expenses);
-      } catch (error) {
-        console.error("Error fetching expenses:", error);
-      }
-    },
     async fetchSales({ commit }) {
       try {
         const sales = await fetchData("/sales/all");
@@ -74,13 +70,30 @@ const store = createStore({
         console.error("Error fetching sales:", error);
       }
     },
+    async fetchTransactions({ commit }) {
+      try {
+        const sales = await fetchData("/transaction/all");
+        commit("setTransactions", sales);
+      } catch (error) {
+        console.error("Error fetching transactions:", error);
+      }
+    },
+    async fetchPurchases({ commit }) {
+      try {
+        const purchases = await fetchData("/purchases/all");
+        commit("setPurchases", purchases);
+      } catch (error) {
+        console.error("Error fetching purchases:", error);
+      }
+    },
     async initializeAppData({ dispatch }) {
       await Promise.all([
         dispatch("fetchProducts"),
         dispatch("fetchSuppliers"),
         dispatch("fetchCategories"),
-        dispatch("fetchExpenses"),
         dispatch("fetchSales"),
+        dispatch("fetchTransactions"),
+        dispatch("fetchPurchases"),
       ]);
     },
   },
@@ -94,11 +107,14 @@ const store = createStore({
     getCategories(state) {
       return state.categories;
     },
-    getExpenses(state) {
-      return state.expenses;
-    },
     getSales(state) {
       return state.sales;
+    },
+    getTransactions(state) {
+      return state.transactions;
+    },
+    getPurchases(state) {
+      return state.purchases;
     },
   },
 });

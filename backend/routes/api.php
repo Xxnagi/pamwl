@@ -40,4 +40,3 @@ Route::post('/sales', [SalesController::class, 'addSales']);
 
 Route::get('/purchases/all', [PurchaseController::class, 'showAll']);
 Route::post('/purchases', [PurchaseController::class, 'addPurchase']);
-Route::get('/purchases/total', [PurchaseController::class, 'getTotalPurchases']);

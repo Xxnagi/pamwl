@@ -1,7 +1,13 @@
 <template>
-  <div class="rounded-lg border-2 w-1/2 p-5">
-    <p class="font-bold text-lg">Laporan Penjualan</p>
-    <BarChart :data="chartData" :options="chartOptions" />
+  <div class="rounded-lg border-2 w-full h-96 p-5">
+    <p class="font-bold text-lg mb-4">Laporan Penjualan</p>
+    <BarChart
+      v-if="chartData.datasets[0].data.length > 0"
+      :data="chartData"
+      :options="chartOptions"
+      class="h-64"
+    />
+    <p v-else class="text-gray-500">Tidak ada data penjualan</p>
   </div>
 </template>
 
@@ -28,47 +34,101 @@ ChartJS.register(
 );
 
 export default {
-  name: "SalesChart",
+  name: "TopSalesChart",
   components: {
     BarChart: Bar,
+  },
+  props: {
+    transactions: {
+      type: Array,
+      default: () => [],
+    },
+    products: {
+      type: Array,
+      default: () => [],
+    },
   },
   data() {
     return {
       chartData: {
-        labels: [
-          "Red Velvet",
-          "Corn",
-          "Blueberry",
-          "Original",
-          "Banana",
-          "Strawberry",
-        ],
+        labels: [],
         datasets: [
           {
-            label: "Sales",
-            data: [48, 112, 66, 149, 93, 78], // Data values
-            backgroundColor: "rgba(54, 162, 235, 0.8)", // Bar color
-            borderRadius: 10, // Rounded bar corners
+            label: "Jumlah Terjual",
+            data: [],
+            backgroundColor: "rgba(54, 162, 235, 0.8)",
+            borderRadius: 10,
           },
         ],
       },
       chartOptions: {
-        indexAxis: "y", // Horizontal bar chart
+        indexAxis: "y",
         responsive: true,
+        maintainAspectRatio: false,
         plugins: {
-          legend: { display: false }, // Hide legend
+          legend: { display: false },
           tooltip: {
             callbacks: {
-              label: (tooltipItem) => ` ${tooltipItem.raw}`, // Customize tooltip text
+              label: (tooltipItem) => ` ${tooltipItem.formattedValue} pcs`,
             },
           },
         },
         scales: {
-          x: { beginAtZero: true }, // Start x-axis at 0
-          y: { ticks: { font: { size: 14 } } }, // Y-axis label styles
+          x: {
+            beginAtZero: true,
+            title: {
+              display: false,
+              text: "Jumlah Produk Terjual",
+            },
+          },
+          y: {
+            ticks: {
+              font: { size: 12 },
+            },
+          },
         },
       },
     };
+  },
+  watch: {
+    transactions: {
+      immediate: true,
+      handler() {
+        this.processTopSales();
+      },
+    },
+  },
+  methods: {
+    processTopSales() {
+      // Filter only sales transactions
+      const salesTransactions = this.transactions.filter(
+        (trans) => trans.jenis_transaksi === "Penjualan"
+      );
+
+      // Aggregate sales by product
+      const productSales = salesTransactions.reduce((acc, transaction) => {
+        const productId = transaction.product_id;
+        acc[productId] = (acc[productId] || 0) + transaction.quantity;
+        return acc;
+      }, {});
+
+      // Sort and get top 5 products
+      const topProducts = Object.entries(productSales)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5);
+
+      // Prepare chart data
+      this.chartData.labels = topProducts.map(([productId]) => {
+        const product = this.products.find(
+          (p) => p.product_id === parseInt(productId)
+        );
+        return product ? product.product_name : `Produk ${productId}`;
+      });
+
+      this.chartData.datasets[0].data = topProducts.map(
+        ([, quantity]) => quantity
+      );
+    },
   },
 };
 </script>

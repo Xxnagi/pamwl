@@ -6,6 +6,8 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
 class ProductController extends Controller
 {
@@ -69,42 +71,68 @@ class ProductController extends Controller
         }
     }
 
-
     public function addProduct(Request $request)
     {
         try {
             $validator = $request->validate([
-                'products' => 'required|array',
-                'products.*.product_name' => 'required',
-                'products.*.price' => 'required|numeric',
-                'products.*.product_description' => 'required',
-                'products.*.stock' => 'required|integer',
-                'products.*.category_id' => 'required|exists:categories,category_id',
-                'products.*.supplier_id' => 'required|exists:suppliers,supplier_id',
+                'product_name' => 'required',
+                'price' => 'required|numeric',
+                'product_description' => 'required',
+                'category_id' => 'required|exists:categories,category_id',
+                'supplier_name' => 'required',
+                'supplier_contact' => 'required',
             ]);
 
-            // Prepare the products for insertion
-            $products = collect($request->products)->map(function ($product) {
-                return [
-                    'product_name' => $product['product_name'],
-                    'price' => $product['price'],
-                    'product_description' => $product['product_description'],
-                    'stock' => $product['stock'],
-                    'category_id' => $product['category_id'],
-                    'supplier_id' => $product['supplier_id'],
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
-            });
+            $supplier = Supplier::firstOrCreate(
+                ['supplier_name' => $request['supplier_name']],
+                ['supplier_contact' => $request['supplier_contact']]
+            );
 
-            // Insert the products in bulk
-            Product::insert($products->toArray());
+            // Gunakan create untuk Product
+            return Product::create([
+                'product_name' => $request['product_name'],
+                'price' => $request['price'],
+                'product_description' => $request['product_description'],
+                'stock' => $request['stock'] ?? 0,
+                'category_id' => $request['category_id'],
+                'supplier_id' => $supplier->supplier_id,
+            ]);
 
-            return response()->json(['success' => true, 'message' => 'Products added successfully.'], 201);
+
+            return response()->json(['success' => true, 'message' => 'Products and suppliers added successfully.'], 201);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
+
+    // public function addProduct(Request $request)
+    // {
+    //     try {
+    //         $validator = $request->validate([
+    //             'product_name' => 'required',
+    //             'price' => 'required',
+    //             'product_description' => 'required',
+    //             'stock' => 'required',
+    //             'category_id' => 'required',
+    //             'supplier_id' => 'required'
+    //         ]);
+
+    //         $product = Product::create([
+    //             'product_name' => $request->product_name,
+    //             'price' => $request->price,
+    //             'product_description' => $request->product_description,
+    //             'stock' => $request->stock,
+    //             'category_id' => $request->category_id,
+    //             'supplier_id' => $request->supplier_id
+    //         ]);
+
+    //         // Return the created product or a success message
+    //         return response()->json(['success' => true, 'product' => $product], 201);
+    //     } catch (\Exception $e) {
+    //         return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+    //     }
+    // }
+
 
     public function updateProduct(Request $request, $id)
     {

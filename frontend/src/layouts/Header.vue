@@ -1,6 +1,6 @@
 <script setup>
 import { useRoute } from "vue-router";
-import { computed } from "vue"; 
+import { computed } from "vue";
 
 const route = useRoute();
 
@@ -18,7 +18,7 @@ const pageTitle = computed(() => {
 </script>
 
 <template>
-  <div class="flex items-center border-b-2 justify-between px-10 py-3">
+  <div class="flex w-full items-center border-b-2 justify-between px-10 py-3">
     <h1 class="font-bold text-xl">{{ pageTitle }}</h1>
     <div>
       <p class="font-medium">Larry Lobster</p>

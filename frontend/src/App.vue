@@ -17,12 +17,12 @@ onMounted(async () => {
     <Drawer class="w-1/4 lg:w-1/5 border-r" />
 
     <!-- Main Content -->
-    <div class="flex-1 flex flex-col">
+    <div class="flex-1 flex flex-col overflow-y-auto">
       <!-- Header -->
       <Header class="h-16 border-b px-4" />
 
       <!-- Dynamic Content -->
-      <div class="flex-1 overflow-auto p-4">
+      <div class="overflow-x-auto">
         <router-view />
       </div>
     </div>
